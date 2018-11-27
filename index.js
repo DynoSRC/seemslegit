@@ -16,7 +16,7 @@ function memeResponse(res, meme, redirect=false) {
     const random = randomKey(memes);
     const attachment = type ?
         {'image_url': url, 'fallback': 'Valid meme, but failed to load. :('} :
-        {'text': '600+ memes, but this one is invalid. Try this: ' + random}
+        {'text': '600+ memes, but this one is invalid. Try this: ' + random};
     res.json({
       'response_type': 'in_channel',
       'attachments': [attachment]
