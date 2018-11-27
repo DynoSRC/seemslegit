@@ -21,6 +21,16 @@ express()
   .post('/meme', (req, res) => {
     const meme = req.body.meme || req.body.text || req.query.text;
     const type = memes[meme];
-    res.redirect(302, `${S3_PATH}/${meme}.${type}`);
+    const url = `${S3_PATH}/${meme}.${type}`;
+    if (req.body.meme) {
+      res.redirect(302, url);
+    } else {
+      res.json({
+        "response_type": "in_channel",
+        "attachments": [{
+          "image_url": url
+        }]
+      });
+    }
   })
   .listen(PORT, () => console.log(`Listening on ${ PORT }`));
