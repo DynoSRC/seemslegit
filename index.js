@@ -19,7 +19,7 @@ express()
     res.redirect(302, `${S3_PATH}/${meme}.${type}`);
   })
   .post('/meme', (req, res) => {
-    const meme = req.body.meme;
+    const meme = req.body.meme || req.body.text || req.query.text;
     const type = memes[meme];
     res.redirect(302, `${S3_PATH}/${meme}.${type}`);
   })
