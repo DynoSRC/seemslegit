@@ -2,6 +2,7 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const memes = require('./memes');
 const path = require('path');
+const levenshtein = require('fast-levenshtein');
 
 const PORT = process.env.PORT || 5000;
 const S3_PATH = 'https://s3-us-west-2.amazonaws.com/seemslegit';
@@ -13,11 +14,12 @@ function memeResponse(res, meme, redirect=false) {
   if (redirect) {
     res.redirect(302, url);
   } else {
-    const random = randomKey(memes);
+    const closest = !type && closestMeme(meme);
     const attachment = type ?
         {'image_url': url, 'fallback': 'Valid meme, but failed to load. :('} :
         {
-          'text': '600+ memes, but this one is invalid. Try this: ' + random,
+          'text':
+              '600+ memes, but this one is invalid. Did you mean: ' + closest,
           'actions': [{
             'type': 'button',
             'text': 'View all memes',
@@ -31,9 +33,15 @@ function memeResponse(res, meme, redirect=false) {
   }
 }
 
-function randomKey(obj) {
-  const keys = Object.keys(obj);
-  return keys[keys.length * Math.random() << 0];
+function closestMeme(inputMeme) {
+  return Object.keys(memes).reduce((memo, meme) => {
+    const score = levenshtein.get(inputMeme, meme);
+    if (score < memo.score) {
+      memo.score = score;
+      memo.meme = meme;
+    }
+    return memo;
+  }, {score: Infinity, meme: null}).meme;
 }
 
 express()
