@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <% include ../partials/header.ejs %>
+  <style>
+    ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-evenly;
+      align-items: flex-start;
+    }
+
+    li {
+      margin: 10px;
+    }
+
+    a {
+      display: block;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #eee;
+      text-decoration: none;
+      color: #333;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>All Memes</h1>
+
+  <label>
+    Filter:
+    <input id="filter">
+  </label>
+
+  <ul>
+    <% Object.keys(memes).forEach(function(meme) { %>
+      <li data-meme="<%= meme %>">
+        <a href="<%= s3Path %>/<%= meme %>.<%= memes[meme] %>" target="_blank"><%= meme %></a>
+      </li>
+    <% }); %>
+  </ul>
+
+  <script>
+    function showMeme(li, prefix) {
+      const show = !prefix || li.dataset.meme.indexOf(prefix) === 0;
+      li.style.display = show ? 'block' : 'none';
+    }
+
+    document.querySelector('#filter').addEventListener('input', (e) => {
+      document.querySelectorAll('li')
+          .forEach(li => showMeme(li, e.target.value));
+    });
+  </script>
+
+</body>
+</html>

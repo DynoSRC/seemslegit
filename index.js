@@ -16,10 +16,17 @@ function memeResponse(res, meme, redirect=false) {
     const random = randomKey(memes);
     const attachment = type ?
         {'image_url': url, 'fallback': 'Valid meme, but failed to load. :('} :
-        {'text': '600+ memes, but this one is invalid. Try this: ' + random};
+        {
+          'text': '600+ memes, but this one is invalid. Try this: ' + random,
+          'actions': [{
+            'type': 'button',
+            'text': 'View all memes',
+            'url': 'https://seemslegit.herokuapp.com/list',
+          }],
+        };
     res.json({
       'response_type': 'in_channel',
-      'attachments': [attachment]
+      'attachments': [attachment],
     });
   }
 }
@@ -36,6 +43,9 @@ express()
   .set('views', path.join(__dirname, 'views'))
   .set('view engine', 'ejs')
   .get('/', (req, res) => res.render('pages/index'))
+  .get('/list', (req, res) => {
+    res.render('pages/list', {memes: memes, s3Path: S3_PATH});
+  })
   .get('/meme', (req, res) => {
     memeResponse(res, req.query.meme, true);
   })
